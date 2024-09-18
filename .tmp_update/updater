@@ -74,6 +74,16 @@ else
 	export MODEL="MMP"
 fi
 
+#fix onion broken boot in koriki
+if [ ! -f "$SETTINGS_FILE" ]; then
+   if [ "$MODEL" == "MM" ]; then
+   cp "${SYSTEM_PATH}"/assets/system.json "$SETTINGS_FILE"
+   fi
+   if [ "$MODEL" == "MMP" ]; then
+   cp "${SYSTEM_PATH}"/assets/system.mmp.json "$SETTINGS_FILE"
+   fi
+fi
+
 killprocess() {
 	pid=`ps | grep $1 | grep -v grep | cut -d' ' -f3`
 	kill -9 $pid
@@ -327,6 +337,17 @@ else
 	echo +0 > "${SDCARD_PATH}"/App/Clock/timezone.txt
 	export TZ=UTC+0
 fi
+
+# Detect 'MENU' press to open CLOCK app
+if cat /sys/kernel/debug/gpio|grep "gpio-12 "|grep lo > /dev/null 2>&1
+then
+	"${SDCARD_PATH}"/App/Clock/Clock.sh
+	sync
+fi
+
+#kill main program from stock
+
+killall -9 main
 
 # Launch Pico8
 while [ 1 ]; do

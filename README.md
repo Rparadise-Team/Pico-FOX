@@ -24,3 +24,6 @@
 ### Additional Notes:
 - On the first boot, the console will prompt you to set the time once, due to timezone adjustment.
 - For **MMP models**, the WiFi menu will open during the initial setup, allowing you to download games.
+
+- **HOW CHANGE THE TIME OFFLINE**
+- In the boot animation screen press MENU button until you see the clock settings.

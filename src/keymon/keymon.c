@@ -1083,7 +1083,7 @@ int main (int argc, char *argv[]) {
 			if (mmModel) {
 				system("echo MM_in_SM; killall pico8_dyn; killall launch.sh");
     		} else {
-				system("echo MMP_in_SM; ; killall pico8_dyn; killall launch.sh");
+				system("echo MMP_in_SM; killall pico8_dyn; killall launch.sh");
     		}
 			while (1) pause();
 		}
