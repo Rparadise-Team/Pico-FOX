@@ -24,6 +24,10 @@ export CPUSAVE="/mnt/SDCARD/cpu.sav"
 export GOVSAVE="/mnt/SDCARD/governor.sav"
 export SPEEDSAVE="/mnt/SDCARD/speed.sav"
 
+export ROMS="/mnt/SDCARD/Roms/PICO/"
+export SPLORE="/mnt/SDCARD/Roms/PICO/Splore/"
+export BBS="/mnt/SDCARD/App/pico/.lexaloffle/pico-8/bbs/carts/"
+
 # Detect flash type
 if dmesg|fgrep -q "[FSP] Flash is detected (0x1100, 0x68, 0x40, 0x18) ver1.1"; then
 	export SETTINGS_FILE="$SETTINGS_EXT_FILE"
@@ -118,31 +122,21 @@ reset_settings() {
 
 shutdown_console() {
 	if [ ! -f /customer/app/axp_test ]; then
-		show /mnt/SDCARD/poweroff.png
 		killall main
 		killall audioserver
 		killall audioserver.min
 		killall batmon
 		killall keymon
-		killall show
-		/etc/init.d/K00_Sys
-		sync
-		sleep 5
-		umount -l /mnt/SDCARD
-		reboot
+		sleep 2
+		shutdown
 	else
-		show /mnt/SDCARD/poweroff.png
 		killall main
 		killall audioserver
 		killall audioserver.plu
 		killall batmon
 		killall keymon
-		killall show
-		/etc/init.d/K00_Sys
-		sync
-		sleep 5
-		umount -l /mnt/SDCARD
-		poweroff
+		sleep 2
+		shutdown
 	fi
 }
 
@@ -277,7 +271,6 @@ fi
 
 # Koriki keymon
 runifnecessary "keymon" "${SYSTEM_PATH}"/bin/keymon
-runifnecessary "iconmon" "${SYSTEM_PATH}"/bin/iconmon
 
 # Koriki batmon (compiled and adapter from onion)
 "${SYSTEM_PATH}"/bin/batmon &
@@ -295,7 +288,37 @@ if [ -f "${SYSTEM_PATH}"/bftpdutmp ]; then
 	sync
 fi
 
-# Set timezone
+# clean pico8 logs files
+if [ -f "${SDCARD_PATH}"/App/pico/.lexaloffle/pico-8/activity_log.txt ]; then
+	rm "${SDCARD_PATH}"/App/pico/.lexaloffle/pico-8/activity_log.txt
+	rm "${SDCARD_PATH}"/App/pico/.lexaloffle/pico-8/log.txt
+fi
+
+# Set time
+if dmesg|fgrep -q "power key is on"; then
+	export SUBMODEL="MMP_RTC"
+else
+	export SUBMODEL="MMP_NO_RTC"
+fi
+
+if [ -f "${SDCARD_PATH}"/App/Clock/time.txt ]; then
+    localtime=`cat "${SDCARD_PATH}"/App/Clock/time.txt`
+	if dmesg|fgrep -q "Please set rtc timer (hwclock -w) "; then
+		hwclock -w
+		date -s "${localtime}"
+	else
+		if [ "$SUBMODEL" == "MMP_NO_RTC" ]; then
+			date -s "${localtime}"
+		fi
+	fi
+else
+    touch "${SDCARD_PATH}"/App/Clock/time.txt
+	hwclock -w
+	date -s "2024-09-01 10:00:00"
+	localtime=$(date +"%Y-%m-%d %T")
+	echo "$localtime" > "${SDCARD_PATH}"/App/Clock/time.txt
+fi
+
 if [ -f "${SDCARD_PATH}"/App/Clock/timezone.txt ]; then
     timezone=`cat "${SDCARD_PATH}"/App/Clock/timezone.txt`
 	export TZ=UTC$((-1*timezone))
@@ -310,8 +333,18 @@ while [ 1 ]; do
 	HOME="${SDCARD_PATH}"
 	cd "${SYSTEM_PATH}"/bin
 	./launch.sh
+	show /mnt/SDCARD/poweroff.png
+	if [ ! -d "$SPLORE" ]; then
+    mkdir -p "$SPLORE"
+	fi
+
+	if ls "$BBS"* 1> /dev/null 2>&1; then
+    	cp "$BBS"* "$SPLORE"
+	else
+    	echo "No BBS files found to copy."
+	fi
 	sync
-	sleep 4s
+	sleep 5s
 # turf off the console.
 	shutdown_console
 done
