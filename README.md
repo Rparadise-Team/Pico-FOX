@@ -1,3 +1,5 @@
+![pico-fox](pngs/pico-fox_logo.png)
+
 # Pico-FOX
 
 **Rparadise** presents **Pico-FOX**, a fantasy console system based on **Koriki OS**, dedicated to the **Pico-8** ecosystem.
