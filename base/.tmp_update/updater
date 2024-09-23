@@ -254,6 +254,13 @@ fi
 vol=$((($vol*3)+40))
 /customer/app/tinymix set 6 "$vol"
 
+#fixed color gamma
+if [ "$MODEL" == "MM" ]; then
+	if [ "$SUBMODEL" == "MMv4" ]; then
+		echo "colortemp 0 0 0 0 128 128 140" > /proc/mi_modules/mi_disp/mi_disp0
+	fi
+fi
+
 # Show bootScreen or videosplash
 echo 0 > "/sys/module/gpio_keys_polled/parameters/button_enable"
 "${SYSTEM_PATH}"/bin/ffplayer "${SYSTEM_PATH}"/videosplash.mp4
