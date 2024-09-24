@@ -37,4 +37,4 @@ https://www.lexaloffle.com/pico-8.php
 
 Version for Raspberry Pi.
 
-and put the Pico8_dyn and Pico8.dat files in the App/Pico/Bin/bin/bin folder.
+and put the Pico8_dyn and Pico8.dat files in the App/pico/bin folder.
