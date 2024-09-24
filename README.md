@@ -29,3 +29,12 @@
 
 - **HOW CHANGE THE TIME OFFLINE**
 - In the boot animation screen press MENU button until you see the clock settings.
+
+- **ATENTION**
+- For license reasons the exclusive binaries of Pico 8 are not included in the image, for this they buy them on the web:
+
+https://www.lexaloffle.com/pico-8.php
+
+Version for Raspberry Pi.
+
+and put the Pico8_dyn and Pico8.dat files in the App/Pico/Bin/bin/bin folder.
