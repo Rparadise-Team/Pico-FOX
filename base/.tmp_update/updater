@@ -134,6 +134,70 @@ else
 fi
 }
 
+update() {
+	
+	echo "Checking for updater Pico-FOX package"
+	
+	if [ -f "${SDCARD_PATH}"/.deletes ]; then
+		while IFS= read -r file_to_delete; do
+		rm -rf "${file_to_delete}"
+		done < "${SDCARD_PATH}"/.deletes
+		rm "${SDCARD_PATH}"/.deletes
+	fi
+
+	if [ -f "${SDCARD_PATH}/"update_pico-fox_*.zip ]; then
+	
+		echo "update Pico-FOX package found"
+		
+		for file in `ls "${SDCARD_PATH}"/update_pico-fox_*.zip`; do
+		unzip -q -o "${file}" ".update_splash.png" -d "${SDCARD_PATH}"
+		sync
+		
+		show "${SDCARD_PATH}"/.update_splash.png
+
+		unzip -q -o "${file}" ".deletes" -d "${SDCARD_PATH}"
+		
+		if [ -f "${SDCARD_PATH}"/.deletes ]; then
+			while IFS= read -r file_to_delete; do
+			if [ -f "${file_to_delete}" ]; then
+				rm "${file_to_delete}"
+			elif [ -d "${file_to_delete}" ]; then
+				rm -rf "${file_to_delete}"
+			fi
+			done < "${SDCARD_PATH}"/.deletes
+		fi
+
+		unzip -q -o "${file}" -d "${SDCARD_PATH}"
+
+		rm "${file}"
+		
+		if [ -f "${SDCARD_PATH}"/.deletes ]; then
+			rm "${SDCARD_PATH}"/.deletes
+		fi
+		
+		if [ -f "${SDCARD_PATH}"/.update_splash.png ]; then
+		rm "${SDCARD_PATH}"/.update_splash.png
+		fi
+		
+		sleep 5s
+		done
+		
+		sync
+		sleep 5s
+		
+		if [ "$MODEL" == "MMP" ]; then
+			poweroff
+		else
+			reboot
+		fi
+		
+		sleep 10s
+	fi
+	
+	echo "update Pico-FOX package not found"
+
+}
+
 killprocess() {
 	pid=`ps | grep $1 | grep -v grep | cut -d' ' -f3`
 	kill -9 $pid
@@ -217,6 +281,9 @@ resize
 
 # Charging screen
 "${SYSTEM_PATH}"/bin/charging
+
+# Update opportunity
+update
 
 # check swap size
 if [ -f "${SWAPFILE}" ]; then
@@ -420,7 +487,8 @@ while [ 1 ]; do
 	fi
 
 	if ls "$BBS"* 1> /dev/null 2>&1; then
-    	cp "$BBS"* "$SPLORE"
+		rm "$BBS"temp-*
+    	cp "$BBS"*.p8.png "$SPLORE"
 	else
     	echo "No BBS files found to copy."
 	fi

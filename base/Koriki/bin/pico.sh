@@ -160,7 +160,7 @@ set_snd_level "${volume}" &
 
 echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
-pico8_dyn -splore -width 640 -height 480 -root_path "/mnt/SDCARD/Roms/PICO/"
+pico8_dyn -splore -width 320 -height 240 -root_path "/mnt/SDCARD/Roms/PICO/"
 
 sync
 

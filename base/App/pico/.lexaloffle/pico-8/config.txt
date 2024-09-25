@@ -9,8 +9,8 @@
 
 // :: Video Settings
 
-window_size 640 480 // window width, height
-screen_size 640 480 // screen width, height (stretched to window) 
+window_size 320 240 // window width, height
+screen_size 320 240 // screen width, height (stretched to window) 
 show_fps 0 // Draw frames per second in the corner
 
 
@@ -30,7 +30,7 @@ foreground_sleep_ms 1 // number of milliseconds to sleep each frame. Try 10 to c
 
 background_sleep_ms 10 // number of milliseconds to sleep each frame when running in the background
 
-sessions 19 // number of times program has been run
+sessions 59 // number of times program has been run
 
 // (scancode) hold this key down and left-click to simulate right-click
 rmb_key 0 // 0 for none  226 for LALT
