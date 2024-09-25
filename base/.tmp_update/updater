@@ -98,11 +98,15 @@ if [ ! -f "$SDCARD_PATH/RESIZED" ]; then
 	mkdir -p $TMP_LIB
 
     # Copiar fatresize y sus bibliotecas necesarias
-    echo "Copiando fatresize y dependencias..."
-    cp "$SDCARD_PATH/Koriki/bin/fatresize" $TMP_PATH/
+    echo "Copiando parted y dependencias..."
+	cp "$SDCARD_PATH/Koriki/bin/fatresize" $TMP_PATH/
+    cp "$SDCARD_PATH/Koriki/bin/parted" $TMP_PATH/
+	cp "$SDCARD_PATH/Koriki/bin/partprobe" $TMP_PATH/
 	cp "$SDCARD_PATH/Koriki/bin/show" $TMP_PATH/
 	cp "$SDCARD_PATH/Koriki/images/resize.png" $TMP_PATH/
 	chmod +x $TMP_PATH/fatresize
+	chmod +x $TMP_PATH/parted
+	chmod +x $TMP_PATH/partprobe
 	chmod +x $TMP_PATH/show
     cp "$SDCARD_PATH/Koriki/lib/libparted-fs-resize.so.0" $TMP_LIB/
     cp "$SDCARD_PATH/Koriki/lib/libparted.so.2" $TMP_LIB/
