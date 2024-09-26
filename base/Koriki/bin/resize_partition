@@ -62,38 +62,27 @@ if [ "$0" = "/tmp/_resize_partition" ]; then
     chmod +x $TMP_PATH
 	
 	$TMP_PATH/show $TMP_PATH/resize.png
+	
+	sleep 5
 
     # Show partition information before resizing
     echo "Partition information before resizing:"
+	
     $TMP_PATH/fdisk -l /dev/mmcblk0
+	
+	# Extract size in GiB from fdisk and convert to KiB
+	
+    TOTAL_GIB=$($TMP_PATH/fdisk -l /dev/mmcblk0 | grep "Disk /dev/mmcblk0" | awk '{print $3}')
+    TOTAL_KIB=$(awk "BEGIN {printf \"%d\", ( $TOTAL_GIB * 1024 * 1024 ) - 2}")
 
-    # Get disk and partition details using fdisk
-    echo "Getting disk and partition information..."
-    TOTAL_SECTORS=$($TMP_PATH/fdisk -l /dev/mmcblk0 | grep "sectors$" | awk '{print $7}')
-    PART_START=$($TMP_PATH/fdisk -l /dev/mmcblk0 | grep "/dev/mmcblk0p1" | awk '{print $2}')
-
-    if [ -z "$TOTAL_SECTORS" ] || [ -z "$PART_START" ]; then
-        echo "Error: Unable to retrieve disk or partition information."
-		sync
-		/customer/main
-        exit 1
-    fi
-
-    SECTOR_SIZE=512  # Sector size in bytes
-
-    # Leave a small margin at the end of the partition (1MB)
-    MARGIN_SECTORS=$((1 * 1024 * 1024 / SECTOR_SIZE))  # 1MB in sectors
-    MAX_SECTORS=$((TOTAL_SECTORS - PART_START - MARGIN_SECTORS))
-
-    # Calculate maximum partition size in MB
-    MAX_PART_SIZE_MB=$((MAX_SECTORS * SECTOR_SIZE / 1048576))
-
-    echo "Total disk size: $((TOTAL_SECTORS * SECTOR_SIZE / 1048576)) MB"
-    echo "Max partition size with 1MB margin: ${MAX_PART_SIZE_MB} MB"
-
-    # Run fatresize with the calculated size
-    echo "Resizing the FAT32 partition to ${MAX_PART_SIZE_MB}MB..."
-    $TMP_PATH/fatresize -f -v -s ${MAX_PART_SIZE_MB}M /dev/mmcblk0p1
+    echo "Total size: $TOTAL_GIB GiB"
+    echo "Converted size: $TOTAL_KIB KiB"
+	
+	$TMP_PATH/fatresize -f -v -s ${TOTAL_KIB}ki /dev/mmcblk0p1
+	
+	$TMP_PATH/fsck.fat -a -v /dev/mmcblk0p1
+	
+	$TMP_PATH/parted /dev/mmcblk0 --script resizepart 1 100%
 
     # Check if the resize was successful
     if [ $? -ne 0 ]; then
@@ -105,11 +94,14 @@ if [ "$0" = "/tmp/_resize_partition" ]; then
 
     # Run partprobe to force partition table reload
     echo "Forcing partition table reload with partprobe..."
+	
     $TMP_PATH/partprobe /dev/mmcblk0
 
-    # Fix FAT32 header
+    # Fix FAT32 header RAW in windows
     echo -n -e \\xEB\\x58\\x90 > /dev/mmcblk0p1
     sync
+	
+	$TMP_PATH/fsck.fat -a -v /dev/mmcblk0p1
 
     # Remount the partition using system's mount command
     echo "Remounting the partition..."
