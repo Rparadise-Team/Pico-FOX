@@ -103,9 +103,9 @@ if [ ! -f "$config_file" ] || \
   "bezel":{
     "current_bezel":3,
     "current_integer_bezel":0,
-    "bezel_path":"res\/border\/",
+    "bezel_path":"res\/border",
     "digit_path":"res\/digit",
-    "bezel_int_path":"res\/border\/"
+    "bezel_int_path":"res\/border"
   }
 }
 EOF
@@ -160,7 +160,7 @@ set_snd_level "${volume}" &
 
 echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
-pico8_dyn -splore -width 320 -height 240 -root_path "/mnt/SDCARD/Roms/PICO/"
+pico8_dyn -splore -root_path "/mnt/SDCARD/Roms/PICO/" -fullscreem_method 0 -software_blit 0 -windowed 0
 
 sync
 
